@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"d:/projects/webscrapping serivce\" log --all --oneline -- dashboard/.env)",
+      "Bash(git -C \"d:/projects/webscrapping serivce\" log --all --full-history --oneline -- '*.env' 'dashboard/.env' '.env')"
+    ]
+  }
+}

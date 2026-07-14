@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+.env
+*.json
+*.html
+*.png
+*.txt
+!requirements.txt
+!test_*.py
+!server.py
+!main.py
+!maps_scraper.py
+!enrichment.py
+!site_auditor.py

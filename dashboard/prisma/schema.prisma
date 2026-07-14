@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id            String   @id @default(cuid())
+  name          String
+  plan          String   @default("FREE")
+  niche         String?
+  serviceLevel  String   @default("FULL_CRM")
+  credits       Int      @default(0) // Used for Stripe billing
+  hasTeamManagement Boolean @default(false)
+
+  planLeadsUsed    Int      @default(0)
+  planLeadsLimit   Int      @default(25)
+  planResetDate    DateTime @default(now())
+
+  // Dashboard Customization (JSON strings)
+  customPipelineStages String?   // JSON array: '["Interested","Demo Booked","Closed"]'
+  customStatCards      String?   // JSON array: '[{"key":"noWebsite","label":"No Website","icon":"globe"}]'
+  customScoringRules   String?   // JSON array: '[{"field":"has_website","op":"eq","value":false,"points":30}]'
+
+  users         User[]
+  leads         Lead[]
+  invites       Invite[]
+  subscription  Subscription?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Subscription {
+  id                 String   @id @default(cuid())
+  organizationId     String   @unique
+  organization       Organization @relation(fields: [organizationId], references: [id])
+  razorpaySubId      String?  @unique
+  razorpayCustomerId String?
+  plan               String   @default("FREE")
+  status             String   @default("active")
+  currentPeriodEnd   DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Lead {
+  id              Int      @id @default(autoincrement())
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  name            String
+  phone           String?
+  website         String?
+  maps_url        String?
+  emails          String?
+  cms_type        String?
+  rating          String?
+  has_website     Boolean  @default(false)
+  load_time       Float?
+  mobile_friendly Boolean  @default(false)
+  has_booking     Boolean  @default(false)
+  error           String?
+  category        String?
+  status          String   @default("New Lead")
+  notes           String?
+  agent           String?
+  propertyName    String?
+  visitTime       DateTime?
+  activity        String   @default("[]")
+  inPipeline      Boolean  @default(false)
+  
+  auditData       String?    // Unstructured JSON for flexible multi-niche metrics
+
+  // Forecasting + rotting
+  dealValue       Float    @default(0)
+  probability     Int      @default(50)
+  lastContactedAt DateTime @default(now())
+  nextFollowUp    DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  
+  username       String   @unique
+  passwordHash   String?  // Made optional for OAuth
+  firebaseUid    String?  @unique // Added for Firebase integration placeholder
+  role           String   @default("SALES") // ADMIN or SALES
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Invite {
+  id              String   @id @default(cuid())
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email           String
+  role            String   @default("SALES") // ADMIN or SALES
+  status          String   @default("PENDING") // PENDING | ACCEPTED | REVOKED
+  invitedBy       String   // username of the admin who created the invite
+  createdAt       DateTime @default(now())
+
+  @@unique([organizationId, email])
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  niche     String
+  message   String
+  status    String   @default("UNREAD") // UNREAD, READ, RESPONDED
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+/* ── Light theme (default) ───────────────────────── */
+:root {
+  --background: #f3efe4;
+  --foreground: #141314;
+
+  /* Surfaces */
+  --surface-page: #f3efe4;
+  --surface-card: #ebe7db;
+  --surface-card-hover: #e3dfd3;
+  --surface-header: #c4bfb0;
+  --surface-input: rgba(10, 11, 10, 0.05);
+  --surface-input-focus: #ffffff;
+  --surface-badge: #e3dfd3;
+  --surface-table-stripe: rgba(10, 11, 10, 0.03);
+
+  /* Text */
+  --text-primary: #141314;
+  --text-secondary: rgba(10, 11, 10, 0.7);
+  --text-muted: rgba(10, 11, 10, 0.5);
+  --text-faint: rgba(10, 11, 10, 0.4);
+  --text-ghost: rgba(10, 11, 10, 0.25);
+  --text-on-dark: #2c2a24;
+  --text-on-dark-muted: rgba(44, 42, 36, 0.6);
+  --text-on-dark-faint: rgba(44, 42, 36, 0.4);
+
+  /* Borders */
+  --border-default: rgba(10, 11, 10, 0.06);
+  --border-subtle: rgba(10, 11, 10, 0.08);
+  --border-muted: #d8d2c3;
+  --border-divider: #d8d2c3;
+  --border-divider-light: rgba(216, 210, 195, 0.7);
+
+  /* Accent */
+  --accent: #FD551D;
+  --accent-hover: #ff7a4d;
+  --accent-bg: rgba(253, 85, 29, 0.1);
+  --accent-border: rgba(253, 85, 29, 0.2);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Dark theme ──────────────────────────────────── */
+[data-theme="dark"] {
+  --background: #141314;
+  --foreground: #ededed;
+
+  /* Surfaces */
+  --surface-page: #141314;
+  --surface-card: #1a191a;
+  --surface-card-hover: #222122;
+  --surface-header: #141314;
+  --surface-input: rgba(255, 255, 255, 0.05);
+  --surface-input-focus: rgba(255, 255, 255, 0.1);
+  --surface-badge: rgba(255, 255, 255, 0.08);
+  --surface-table-stripe: rgba(255, 255, 255, 0.02);
+
+  /* Text */
+  --text-primary: #f0f0f0;
+  --text-secondary: rgba(240, 240, 240, 0.75);
+  --text-muted: rgba(240, 240, 240, 0.5);
+  --text-faint: rgba(240, 240, 240, 0.35);
+  --text-ghost: rgba(240, 240, 240, 0.2);
+  --text-on-dark: #ffffff;
+  --text-on-dark-muted: rgba(238, 238, 238, 0.5);
+  --text-on-dark-faint: rgba(238, 238, 238, 0.35);
+
+  /* Borders */
+  --border-default: rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-muted: rgba(255, 255, 255, 0.1);
+  --border-divider: rgba(255, 255, 255, 0.08);
+  --border-divider-light: rgba(255, 255, 255, 0.05);
+
+  /* Accent (Brand Orange) */
+  --accent: #FD551D;
+  --accent-hover: #ff7a4d;
+  --accent-bg: rgba(253, 85, 29, 0.15);
+  --accent-border: rgba(253, 85, 29, 0.3);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-mono: var(--font-geist-mono);
+
+  /* Surface tokens */
+  --color-surface-page: var(--surface-page);
+  --color-surface-card: var(--surface-card);
+  --color-surface-card-hover: var(--surface-card-hover);
+  --color-surface-header: var(--surface-header);
+  --color-surface-input: var(--surface-input);
+  --color-surface-input-focus: var(--surface-input-focus);
+  --color-surface-badge: var(--surface-badge);
+  --color-surface-table-stripe: var(--surface-table-stripe);
+
+  /* Text tokens */
+  --color-t-primary: var(--text-primary);
+  --color-t-secondary: var(--text-secondary);
+  --color-t-muted: var(--text-muted);
+  --color-t-faint: var(--text-faint);
+  --color-t-ghost: var(--text-ghost);
+  --color-t-on-dark: var(--text-on-dark);
+  --color-t-on-dark-muted: var(--text-on-dark-muted);
+  --color-t-on-dark-faint: var(--text-on-dark-faint);
+
+  /* Border tokens */
+  --color-b-default: var(--border-default);
+  --color-b-subtle: var(--border-subtle);
+  --color-b-muted: var(--border-muted);
+  --color-b-divider: var(--border-divider);
+  --color-b-divider-light: var(--border-divider-light);
+
+  /* Accent tokens */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-bg: var(--accent-bg);
+  --color-accent-border: var(--accent-border);
+
+  /* Brutalist Theme Additions */
+  --color-brand-orange: #FD551D;
+  --color-brand-dark: #1a191a;
+  --color-brand-black: #141314;
+}
+
+/* Erode for all body text */
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-erode), Arial, Helvetica, sans-serif;
+}
+
+/* Stardom for headings only */
+h1, h2, h3, h4, h5, h6,
+.font-heading {
+  font-family: var(--font-stardom), serif;
+}
+
+/* Smooth theme transition */
+html,
+html *,
+html *::before,
+html *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease, box-shadow 0.25s ease;
+}
+
+/* Disable transitions on page load to prevent flash */
+html.no-transition,
+html.no-transition *,
+html.no-transition *::before,
+html.no-transition *::after {
+  transition: none !important;
+}
+
+/* Hide scrollbar for elements with the .no-scrollbar class */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
