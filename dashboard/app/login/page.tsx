@@ -96,11 +96,15 @@ export default function LoginPage() {
         try {
           // Exchange client token for 14-day server session cookie
           const idToken = await user.getIdToken();
-          await fetch('/api/auth/session', {
+          const sessionRes = await fetch('/api/auth/session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ idToken })
           });
+          if (!sessionRes.ok) {
+            const { error } = await sessionRes.json().catch(() => ({}));
+            throw new Error(`Session creation failed (${sessionRes.status}): ${error}`);
+          }
 
           const res = await fetch('/api/auth/sync', { method: 'POST' });
           const data = await res.json();
@@ -111,7 +115,7 @@ export default function LoginPage() {
           }
         } catch (e) {
           console.error("Sync error", e);
-          router.push('/dashboard');
+          alert("Couldn't complete sign-in. Please refresh and try again.");
         }
       }
     };

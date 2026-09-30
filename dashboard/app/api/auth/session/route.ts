@@ -27,7 +27,15 @@ export async function POST(request: Request) {
 
     // Create the session cookie. This will also verify the ID token in the process.
     // The session cookie will have the same claims as the ID token.
-    const sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
+    // Retry once on transient network failures ("fetch failed") reaching Google.
+    let sessionCookie: string;
+    try {
+      sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
+    } catch (err: any) {
+      if (isAuthError(err)) throw err;
+      console.warn('createSessionCookie network error, retrying once:', err?.message, err?.cause ?? '');
+      sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
+    }
 
     // Set the cookie securely on the Next.js server response
     const cookieStore = await cookies();
@@ -41,7 +49,15 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error creating session cookie:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 401 });
+    // Log the underlying cause — "fetch failed" alone hides the real network error.
+    console.error('Error creating session cookie:', error?.message, error?.cause ?? '');
+    // Only a rejected token is a 401; network/backend failures are 503.
+    const status = isAuthError(error) ? 401 : 503;
+    return NextResponse.json({ success: false, error: error.message }, { status });
   }
+}
+
+function isAuthError(err: any): boolean {
+  const code = err?.code ?? err?.errorInfo?.code;
+  return typeof code === 'string' && code.startsWith('auth/');
 }

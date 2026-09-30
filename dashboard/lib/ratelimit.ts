@@ -39,16 +39,40 @@ if (!redis && process.env.NODE_ENV === 'production') {
   );
 }
 
+// SECURITY: Fail-OPEN wrapper. A rate-limiter backend outage (e.g. Upstash
+// unreachable — DNS failure, network timeout, deleted/expired DB) must never
+// take down the routes it protects. Without this, a thrown error from `.limit()`
+// propagates and breaks auth/API endpoints entirely (this is exactly what a dead
+// Upstash host did to login). We log loudly so the degraded state is visible,
+// then allow the request through. Availability is prioritized over throttling.
+function failOpen(limiter: { limit: (identifier: string) => Promise<RateLimitResult> }) {
+  return {
+    limit: async (identifier: string): Promise<RateLimitResult> => {
+      try {
+        return await limiter.limit(identifier);
+      } catch (err) {
+        console.error(
+          '[ratelimit] backend error — failing open (allowing request):',
+          err instanceof Error ? err.message : err
+        );
+        return { success: true };
+      }
+    },
+  };
+}
+
 function build(tokens: number, window: `${number} s` | `${number} m`, prefix: string) {
   if (!redis) return noopLimiter;
-  return new Ratelimit({
-    redis,
-    // Sliding window provides smoother throttling than fixed windows by
-    // weighting the previous bucket. See @upstash/ratelimit docs.
-    limiter: Ratelimit.slidingWindow(tokens, window),
-    prefix,
-    analytics: false,
-  });
+  return failOpen(
+    new Ratelimit({
+      redis,
+      // Sliding window provides smoother throttling than fixed windows by
+      // weighting the previous bucket. See @upstash/ratelimit docs.
+      limiter: Ratelimit.slidingWindow(tokens, window),
+      prefix,
+      analytics: false,
+    })
+  );
 }
 
 // SECURITY: Auth tier — strictest. Protects login/session/payment endpoints
